@@ -1,0 +1,28 @@
+{
+  "name": "ican-server",
+  "version": "1.0.0",
+  "description": "Server from Ican ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sistemas-distribuidos-cc-inf/ican-server.git"
+  },
+  "keywords": [
+    "webrtc",
+    "node"
+  ],
+  "author": "Gislainy Crisostomo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sistemas-distribuidos-cc-inf/ican-server/issues"
+  },
+  "homepage": "https://github.com/sistemas-distribuidos-cc-inf/ican-server#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket-io-server": "^1.0.5",
+    "socket.io": "^2.0.4"
+  }
+}
