@@ -6,7 +6,7 @@ var options = {
   key: fs.readFileSync('./fake-keys/privatekey.pem'),
   cert: fs.readFileSync('./fake-keys/certificate.pem')
 };
-var serverPort = (process.env.PORT  || 4443);
+var serverPort = (process.env.PORT  || 3000);
 var https = require('https');
 var http = require('http');
 var server;
@@ -56,8 +56,13 @@ io.on('connection', function(socket){
 
   socket.on('join', function(name, callback){
     console.log('join', name);
-    var socketIds = socketIdsInRoom(name);
-    callback(socketIds);
+    let room = roomList[name] || [];
+    room.push(socket.id);
+    roomList[name] = room;
+    debugger
+    // var socketIds = socketIdsInRoom(name);
+    let ret = roomList[name].filter(r => r != socket.id);
+    callback(ret);
     socket.join(name);
     socket.room = name;
   });
