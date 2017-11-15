@@ -6,7 +6,7 @@ var options = {
   key: fs.readFileSync('./fake-keys/privatekey.pem'),
   cert: fs.readFileSync('./fake-keys/certificate.pem')
 };
-var serverPort = (process.env.PORT  || 3000);
+var serverPort = (process.env.PORT  || 4443);
 var https = require('https');
 var http = require('http');
 var server;
@@ -31,7 +31,16 @@ server.listen(serverPort, function(){
 });
 
 function socketIdsInRoom(name) {
-  return roomList[name];
+  var socketIds = io.nsps['/'].adapter.rooms[name];
+  if (socketIds) {
+    var collection = [];
+    for (var key in socketIds) {
+      collection.push(key);
+    }
+    return collection;
+  } else {
+    return [];
+  }
 }
 
 io.on('connection', function(socket){
@@ -47,28 +56,16 @@ io.on('connection', function(socket){
 
   socket.on('join', function(name, callback){
     console.log('join', name);
-    let room = roomList[name] || [];
-    room.push(socket.id);
-    roomList[name] = room;
     var socketIds = socketIdsInRoom(name);
-    const obj = {
-      mySocketId: socket.id,
-      socketIds
-    }
-    callback(obj);
+    callback(socketIds);
     socket.join(name);
     socket.room = name;
   });
 
 
   socket.on('exchange', function(data){
+    console.log('exchange', data);
     data.from = socket.id;
-    if(data.from === data.to) {
-      console.log('data.from === data.to');
-      return;
-    }
-    console.log('data.from', data.from);
-    console.log('data.to', data.to);
     var to = io.sockets.connected[data.to];
     to.emit('exchange', data);
   });
