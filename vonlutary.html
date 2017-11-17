@@ -70,24 +70,24 @@ function getLocalStream() {
 }
 
 function join(roomID) {
-  debugger
-  firebase.auth().signInAnonymously().then(() => {
-    const obj = {
-      video: true,
-      voice: true,
-      chat: true
-    };
-    socket.emit('join', firebase.auth().currentUser.uid, 'vonlutary', obj, function(obj){
+  // debugger
+  // firebase.auth().signInAnonymously().then(() => {
+  //   const obj = {
+  //     video: true,
+  //     voice: true,
+  //     chat: true
+  //   };
+    socket.emit('join', 'vonlutary', function(ret){
         debugger
-      if(obj.anonymous && obj.anonymous.socketId)
-          createPC(obj.anonymous.socketId, true);
+      // if(obj.anonymous && obj.anonymous.socketId)
+      //     createPC(obj.anonymous.socketId, true);
       // console.log('join', socketIds);
       // for (var i in socketIds) {
       //     var socketId = socketIds[i];
       //         createPC(socketId, true);
       // }
     });
-  });
+  // });
 }
 
 function createPC(socketId, isOffer) {

@@ -1,27 +1,48 @@
-var express = require('express');
-var app = express();
-var fs = require('fs');
-var open = require('open');
-var options = {
+
+const  express = require('express');
+const  https = require('https');
+const  http = require('http');
+const  fs = require('fs');
+const  open = require('open');
+const firebase = require('firebase-admin');
+
+let serviceAccount = require('./serviceAccountFirebaseAdmin.json');
+
+firebase.initializeApp({
+  credential: firebase.credential.cert(serviceAccount),
+  databaseURL: 'https://ican-app.firebaseio.com'
+});
+const app = express();
+const options = {
   key: fs.readFileSync('./fake-keys/privatekey.pem'),
   cert: fs.readFileSync('./fake-keys/certificate.pem')
 };
-var serverPort = (process.env.PORT  || 3000);
-var https = require('https');
-var http = require('http');
-var server;
+
+const serverPort = (process.env.PORT  || 3000);
+let server;
 if (process.env.LOCAL) {
   server = https.createServer(options, app);
 } else {
   server = http.createServer(app);
 }
-var io = require('socket.io')(server);
+const io = require('socket.io')(server);
+const rand = require('generate-key');
 
-var roomList = {};
-
+const roomList = {};
 app.get('/', function(req, res){
   console.log('get /');
   res.sendFile(__dirname + '/index.html');
+});
+
+
+app.get('/vonlutary', function(req, res){
+    console.log('get /vonlutary');
+    res.sendFile(__dirname + '/vonlutary.html');
+});
+
+app.get('/anonymous', function(req, res){
+    console.log('get /anonymous');
+    res.sendFile(__dirname + '/anonymous.html');
 });
 server.listen(serverPort, function(){
   console.log('server up and running at %s port', serverPort);
@@ -47,24 +68,57 @@ io.on('connection', function(socket){
   console.log('connection');
   socket.on('disconnect', function(){
     console.log('disconnect');
-    if (socket.room) {
-      var room = socket.room;
-      io.to(room).emit('leave', socket.id);
-      socket.leave(room);
+    debugger
+    const room = socket.room;
+    if(!room) return;
+    if(socket.type_user == 'vonlutary') {
+        delete roomList[socket.room];    
+    } else if(socket.type_user == 'anonymous') {
+        roomList[room].anonymousId = null;
+        roomList[room].available = true;
+
     }
+    io.to(room).emit('leave', socket.id);
+    socket.leave(room);
   });
 
-  socket.on('join', function(name, callback){
-    console.log('join', name);
-    let room = roomList[name] || [];
-    room.push(socket.id);
-    roomList[name] = room;
-    debugger
-    // var socketIds = socketIdsInRoom(name);
-    let ret = roomList[name].filter(r => r != socket.id);
-    callback(ret);
-    socket.join(name);
-    socket.room = name;
+  socket.on('join', function(type, callback) {
+      if(type == 'vonlutary') {
+          if(!Object.keys(roomList).some(r => 
+            roomList[r].vonlutaryId == socket.id
+        )) {
+            const roomRandom = rand.generateKey();
+            roomList[roomRandom] = {
+                vonlutaryId: socket.id,
+                available: true
+            };
+            socket.type_user = type;
+            socket.room = roomRandom;
+            socket.join(roomRandom);
+            callback(null);
+        } 
+        // else {
+        //     let room = null;
+        //     Object.keys(roomList).forEach(r =>  {
+        //         if(roomList[r].vonlutaryId === socket.id) room = r;
+        //     });
+        // }
+    } else if(type == 'anonymous') {
+        let room = null;
+        Object.keys(roomList).forEach(r =>  {
+            if(roomList[r].available) room = r;
+        });
+        if(room) {
+            socket.type_user = type;
+            roomList[room].anonymousId = socket.id;
+            roomList[room].available = false;
+            socket.room = room;
+            socket.join(room);
+            callback(roomList[room].vonlutaryId);
+        } else {
+            callback(null);
+        }
+    }
   });
 
 

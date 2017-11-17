@@ -69,15 +69,15 @@ function getLocalStream() {
 }
 
 function join(roomID) {
-  firebase.auth().signInWithEmailAndPassword('gislainycrisostomo@gmail.com', '123456789').then(() => {
+  // firebase.auth().signInWithEmailAndPassword('gislainycrisostomo@gmail.com', '123456789').then(() => {
     
-    const obj = {
-      connection: 'video',
-    };
-    socket.emit('join', firebase.auth().currentUser.uid, 'anonymous', obj, function(obj){
+  //   const obj = {
+  //     connection: 'video',
+  //   };
+    socket.emit('join', 'anonymous', function(socketId){
       
-      if(obj.vonlutary && obj.vonlutary.socketId)
-        createPC(obj.vonlutary.socketId, true);
+      if(socketId)
+        createPC(socketId, true);
 
       // obj.vonlutary
       // {
@@ -96,7 +96,7 @@ function join(roomID) {
       //         createPC(socketId, true);
       // }
     });
-  });
+  // });
 }
 
 function createPC(socketId, isOffer) {
