@@ -25,7 +25,7 @@ if (process.env.LOCAL) {
 } else {
   server = http.createServer(app);
 }
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {pingTimeout: 30000});
 const rand = require('generate-key');
 
 const roomList = {};
