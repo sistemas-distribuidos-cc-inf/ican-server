@@ -4,14 +4,6 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const open = require('open');
-const firebase = require('firebase-admin');
-
-let serviceAccount = require('./serviceAccountFirebaseAdmin.json');
-
-firebase.initializeApp({
-  credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://ican-app.firebaseio.com'
-});
 const app = express();
 const options = {
   key: fs.readFileSync('./fake-keys/privatekey.pem'),
