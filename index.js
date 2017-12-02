@@ -39,7 +39,6 @@ app.get('/vonlutary', function(req, res){
     console.log('get /vonlutary');
     res.sendFile(__dirname + '/vonlutary.html');
 });
-
 app.get('/anonymous', function(req, res){
     console.log('get /anonymous');
     res.sendFile(__dirname + '/anonymous.html');
@@ -47,7 +46,7 @@ app.get('/anonymous', function(req, res){
 server.listen(serverPort, function(){
   console.log('server up and running at %s port', serverPort);
   if (process.env.LOCAL) {
-    open('https://localhost:' + serverPort)
+    open('https://localhost:' + serverPort);
   }
 });
 
@@ -65,10 +64,8 @@ function socketIdsInRoom(name) {
 }
 
 io.on('connection', function(socket){
-  console.log('connection');
   socket.on('disconnect', function(){
     console.log('disconnect');
-    debugger
     const room = socket.room;
     if(!room) return;
     if(socket.type_user == 'vonlutary') {
@@ -128,4 +125,16 @@ io.on('connection', function(socket){
     var to = io.sockets.connected[data.to];
     to.emit('exchange', data);
   });
+});
+
+
+
+app.get('/login', function(req, res){
+  console.log('get /login');
+  res.sendFile(__dirname + '/login.html');
+});
+app.post('/userlogin', function(req, res){
+  console.log(req);
+  const query = req.query;
+  res.json({login: true});
 });

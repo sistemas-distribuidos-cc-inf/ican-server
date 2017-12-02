@@ -1,0 +1,33 @@
+
+<body>
+    <div class="nav">
+    <form>
+    <input type="text" class="username" placeholder="Username" />
+    <input type="password" class="password" placeholder="Password" />
+    <input type="button" onclick="login()" value="Sign In" class="button" alt=""/></br>
+    <label>
+    </label></form>
+    
+    </div>
+    </body>
+    <script>
+    function login() {
+        debugger
+        var http = new XMLHttpRequest();
+        var url = "http://localhost:3000/userlogin?email=gislainycrisostomo@gmail.com&password=123";
+        var params = "email=gislainycrisostomo@gmail.com&password=123";
+        http.open("POST", url, true);
+    
+        //Send the proper header information along with the request
+        http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    
+        http.onreadystatechange = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+                alert(http.responseText);
+            }
+        }
+        http.send(params);
+    }    
+    </script>
+</html>
+    

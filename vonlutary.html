@@ -149,10 +149,12 @@ function createPC(socketId, isOffer) {
     var dataChannel = pc.createDataChannel("text");
 
     dataChannel.onerror = function (error) {
+      debugger
       console.log("dataChannel.onerror", error);
     };
 
     dataChannel.onmessage = function (event) {
+      debugger
       console.log("dataChannel.onmessage:", event.data);
       var content = document.getElementById('textRoomContent');
       content.innerHTML = content.innerHTML + '<p>' + socketId + ': ' + event.data + '</p>';
@@ -244,6 +246,7 @@ function textRoomPress() {
   if (text == "") {
     alert('Enter something');
   } else {
+    debugger
     document.getElementById('textRoomInput').value = '';
     var content = document.getElementById('textRoomContent');
     content.innerHTML = content.innerHTML + '<p>' + 'Me' + ': ' + text + '</p>';
