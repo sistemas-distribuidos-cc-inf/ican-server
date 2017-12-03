@@ -74,7 +74,7 @@ function join(roomID) {
   //   const obj = {
   //     connection: 'video',
   //   };
-    socket.emit('join', 'anonymous', function(socketId){
+    socket.emit('join', 'anonymous', {nick: 'gislainy'}, function(socketId){
       
       if(socketId)
         createPC(socketId, true);

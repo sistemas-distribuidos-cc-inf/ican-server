@@ -20,8 +20,12 @@ if (process.env.LOCAL) {
 
 const { createSocket } = require('./webrtc');
 const { createRouter } = require('./router');
+const { createConnectionMongo } = require('./mongodb');
+
+
 createSocket(server);
 createRouter(app);
+createConnectionMongo();
 server.listen(serverPort, function () {
   console.log('server up and running at %s port', serverPort);
   if (process.env.LOCAL) {

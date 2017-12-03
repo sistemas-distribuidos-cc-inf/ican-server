@@ -25,6 +25,7 @@
     "express": "^4.15.2",
     "firebase-admin": "^5.5.0",
     "generate-key": "0.0.6",
+    "mongoose": "^4.13.5",
     "open": "0.0.5",
     "socket-io-server": "^1.0.5",
     "socket.io": "^2.0.4"

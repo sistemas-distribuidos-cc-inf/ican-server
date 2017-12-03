@@ -74,8 +74,8 @@ function join(roomID) {
   //   const obj = {
   //     connection: 'video',
   //   };
-    socket.emit('join', 'vonlutary', function(socketId){
-      
+    socket.emit('join', 'vonlutary', {email: 'gislainycrisostomo@gmail.com'}, function(socketId){
+      debugger
       if(socketId)
         createPC(socketId, true);
 
