@@ -85,8 +85,11 @@ const anonymous = {
             callback(null, _id);
         });
     },
-    detele(userId) {
-        anonymousCollection.remove({_id: userId});
+    detele(userId, callback) {
+        anonymousCollection.remove({_id: userId}, 
+        (err) => {
+            callback(err);
+        });
     }
 };
 
@@ -163,7 +166,7 @@ const online = {
 
 const room = {
 	create(data, callback) {
-		let room;
+        let room;
 		if(data.type == 'vonlutary') {
 			online.findUserId(data.userId, 'vonlutary', 
 			(err, user) => {
@@ -219,7 +222,7 @@ const room = {
 		)[0];
 		callback(roomAvailable);
 	},
-	putTheRoomInoccupied(roomId, type, userId) {
+	putTheRoomInoccupied(_id, type, userId, callback) {
 		online.findUserId(userId, type, (err, user) => {
 			let update = {};
 			if(type === 'vonlutary') {
@@ -238,8 +241,14 @@ const room = {
 						available: false
 					}
 				};
-			}	
-			roomCollection.update({_id: roomId}, update);
+            }
+            const query = {
+                _id: _id
+            };
+			roomCollection.findOneAndUpdate(query, update, { upsert: true }, (err, room) => {
+                if(err) callback(err);
+                callback(null, room);
+            });
 		});
 	},
 	join(userId, type, callback) {
@@ -256,9 +265,11 @@ const room = {
                                 callback(null, roomId, null);   
                             });
                         } else {
-                            room.putTheRoomInoccupied(re._id.toString(), type, userId);
-                            const anonymousSocketId = re.anonymousSocketId;
-                            callback(null, re, anonymousSocketId);
+                            room.putTheRoomInoccupied(re._id.toString(), type, userId, 
+                            (err) => {  
+                                const vonlutarySocketId = re.vonlutarySocketId;
+                                callback(err, re._id.toString(), vonlutarySocketId);
+                            });
                         }
 					});
 			} else if(type === 'anonymous') {
@@ -272,9 +283,11 @@ const room = {
                                 callback(null, roomId, null);   
                             });                     
                         } else {
-                            room.putTheRoomInoccupied(re._id.toString(), type, userId);
-                            const vonlutarySocketId = re.vonlutarySocketId;
-                            callback(null, re, vonlutarySocketId);
+                            room.putTheRoomInoccupied(re._id.toString(), type, userId, 
+                            (err) => {
+                                const vonlutarySocketId = re.vonlutarySocketId;
+                                callback(err, re._id.toString(), vonlutarySocketId);
+                            });
                         }
 					});
 			}
@@ -289,7 +302,7 @@ const room = {
             callback(err, room[0]);
         });
     },
-    removeUserFromRoom(roomId, type) {
+    removeUserFromRoom(roomId, type, callback) {
         let update = {};
         if(type == 'vonlutary') {
             update = {
@@ -305,19 +318,29 @@ const room = {
                 available: true
             };
         }
-        roomCollection.update({_id: roomId}, update);
+        const query = {
+            _id: roomId
+        };
+        roomCollection.findOneAndUpdate(query, update, { upsert: true }, (err, room) => {
+            if(err) callback(err);
+            callback(null, room);
+        });
     },
     leave(roomId, type, callback) {
         room.searchForAUserInARoom(roomId, 
             (err, r) => {
                 if(err) return callback(err);
                 const userId = type == 'vonlutary' ? r.vonlutaryId : r.anonymousId;
-                online.delete(userId, () => {
-                    room.removeUserFromRoom(roomId, type);
-                    if(type == 'anonymous')
-                        anonymous.detele(userId);
-                    callback();
-                });
+                // if(type == 'anonymous')
+                //     anonymous.detele(userId, call);
+                // else call();
+                // function call(err) {
+                    online.delete(userId, () => {
+                        room.removeUserFromRoom(roomId, type, (err) => {
+                            callback(err);
+                        });
+                    });
+                // }
             });
 
     },

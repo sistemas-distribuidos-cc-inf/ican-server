@@ -10,7 +10,6 @@ function createSocket(server) {
     const roomList = {};
     io.on('connection', function(socket){
         socket.on('disconnect', function(){
-            debugger
             console.log('disconnect');
             const roomId = socket.roomId;
             if (!roomId) return;
@@ -36,7 +35,6 @@ function createSocket(server) {
                 });
             } 
             else if (type == 'anonymous') {
-                debugger
                 anonymous.create(objData.nick, (err, userId) => {
                     if(err) callback(err);
                     online.createAnonymousOnline(userId, socket.id, (err) => {
@@ -54,7 +52,8 @@ function createSocket(server) {
             console.log('exchange', data);
             data.from = socket.id;
             var to = io.sockets.connected[data.to];
-            to.emit('exchange', data);
+            if(to)
+                to.emit('exchange', data);
         });
   }); 
 }

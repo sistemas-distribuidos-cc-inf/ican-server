@@ -158,7 +158,6 @@ function createPC(socketId, isOffer) {
     };
 
     dataChannel.onmessage = function (event) {
-      debugger
       console.log("dataChannel.onmessage:", event.data);
       var content = document.getElementById('textRoomContent');
       content.innerHTML = content.innerHTML + '<p>' + socketId + ': ' + event.data + '</p>';
@@ -250,7 +249,6 @@ function textRoomPress() {
     var content = document.getElementById('textRoomContent');
     content.innerHTML = content.innerHTML + '<p>' + 'Me' + ': ' + text + '</p>';
     for (var key in pcPeers) {
-      debugger
       var pc = pcPeers[key];
       pc.textDataChannel.send(text);
     }
