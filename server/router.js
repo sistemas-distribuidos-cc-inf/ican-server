@@ -1,3 +1,7 @@
+const {
+    vonlutary
+} = require('./mongodb');
+
 function createRouter(app) {
     app.get('/', function (req, res) {
         console.log('get /');
@@ -17,8 +21,18 @@ function createRouter(app) {
       });
     app.post('/userlogin', function(req, res){
         console.log(req);
-        const query = req.query;
-        res.json({login: true});
+        const query = req.query || {};
+        const email = query.email || null;
+        const password = query.password || null;
+        vonlutary.find(email, password, (err, userId) => {
+            res.json(
+                {
+                    err,
+                    userId
+                }
+            );
+
+        });
     });
 }
 

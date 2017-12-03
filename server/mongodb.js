@@ -355,16 +355,3 @@ module.exports = {
     room
 };
 
-
-
-// Rentangulo
-
-// class Rentangulo {
-// 	constructor(altura, largura) {
-// 		this.altura = altura;
-// 		this.largura = largura;
-// 	}
-// 	getArea() {
-// 		return this.altura * this.largura;
-// 	}
-// }
