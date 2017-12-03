@@ -267,8 +267,8 @@ const room = {
                         } else {
                             room.putTheRoomInoccupied(re._id.toString(), type, userId, 
                             (err) => {  
-                                const vonlutarySocketId = re.vonlutarySocketId;
-                                callback(err, re._id.toString(), vonlutarySocketId);
+                                const anonymousSocketId = re.anonymousSocketId;
+                                callback(err, re._id.toString(), anonymousSocketId);
                             });
                         }
 					});
@@ -306,7 +306,7 @@ const room = {
         let update = {};
         if(type == 'vonlutary') {
             update = {
-                vonlutarySocketIdId: null,
+                vonlutarySocketId: null,
                 vonlutaryId: null,
                 available: true
             };
@@ -321,10 +321,23 @@ const room = {
         const query = {
             _id: roomId
         };
-        roomCollection.findOneAndUpdate(query, update, { upsert: true }, (err, room) => {
+        roomCollection.findOneAndUpdate(query, update, { upsert: true }, (err, r) => {
             if(err) callback(err);
-            callback(null, room);
+            room.deleteRoomWithoutUsers(r, type, callback);
         });
+    },
+    deleteRoomWithoutUsers(r, type, callback) {
+        if((type== 'vonlutary' && !r.anonymousId && !r.anonymousSocketId)
+        || (type== 'anonymous' && !r.vonlutaryId && !r.vonlutarySocketId)
+    ) {
+        roomCollection.remove({_id: r._id.toString()}, 
+        (err) => {
+            callback(err, r);                
+        });
+    } else {
+            callback(null, r);
+        }         
+            
     },
     leave(roomId, type, callback) {
         room.searchForAUserInARoom(roomId, 
@@ -355,16 +368,3 @@ module.exports = {
     room
 };
 
-
-
-// Rentangulo
-
-// class Rentangulo {
-// 	constructor(altura, largura) {
-// 		this.altura = altura;
-// 		this.largura = largura;
-// 	}
-// 	getArea() {
-// 		return this.altura * this.largura;
-// 	}
-// }
