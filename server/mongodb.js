@@ -9,6 +9,7 @@ function createConnectionMongo() {
     });
     db.once('open', () => {
         createSchemas();
+        //createVonlutary();
     });
 }
 function createSchemas() {
@@ -38,6 +39,29 @@ function createSchemas() {
     roomCollection = mongoose.model('room', roomSchema);
 }
 
+function createVonlutary() {
+    const vonlutary = [
+        {
+            email: 'gislainy@teste',
+            password: '123'
+        },
+        {
+            email: 'marcello@teste',
+            password: '123'
+        },
+        {
+            email: 'pabllo@teste',
+            password: '123'
+        },
+    ];
+    vonlutary.forEach(v => {
+        const von = new vonlutaryCollection({
+            email: v.email,
+            password: v.password,
+        });
+        von.save();
+    });
+}
 
 const vonlutary = {
     create(email, password, callback) {
@@ -206,20 +230,19 @@ const room = {
 	searchForAvaiableRoom(callback) {
 		roomCollection.find({
 			available: true
-		},  (err, room) => {
-            room = room || [];
+		},  (err, r) => {
 			if (err) return callback(err);
-			callback(null, room);
+			callback(null, r);
 		});
 	},
-	roomAvailableToEnterVonlutary(room, callback) {
-		const roomAvailable = room.filter(r => 
+	roomAvailableToEnterVonlutary(re, callback) {
+		const roomAvailable = re.filter(r => 
 			!r.vonlutaryId && !r.vonlutarySocketId
 		)[0];
 		callback(roomAvailable);
 	},
-	roomAvailableToEnterAnonymous(room, callback) {
-		const roomAvailable = room.filter(r => 
+	roomAvailableToEnterAnonymous(re, callback) {
+		const roomAvailable = re.filter(r => 
 			!r.anonymousId && !r.anonymousSocketId
 		)[0];
 		callback(roomAvailable);
