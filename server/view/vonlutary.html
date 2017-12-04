@@ -68,13 +68,13 @@ function getLocalStream() {
   }, logError);
 }
 
-function join(roomID) {
+function join(email) {
   // firebase.auth().signInWithEmailAndPassword('gislainycrisostomo@gmail.com', '123456789').then(() => {
     
   //   const obj = {
   //     connection: 'video',
   //   };
-    socket.emit('join', 'vonlutary', {email: 'gislainycrisostomo@gmail.com'}, function(socketId){
+    socket.emit('join', 'vonlutary', {email}, function(socketId){
       if(socketId)
         createPC(socketId, true);
 
