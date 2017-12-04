@@ -166,17 +166,18 @@ const online = {
 
 const room = {
 	create(data, callback) {
-        let room;
+        let r;
 		if(data.type == 'vonlutary') {
 			online.findUserId(data.userId, 'vonlutary', 
 			(err, user) => {
 				if(user) {
-					room = roomCollection({
+					r = {
 						vonlutaryId: data.userId,
 						vonlutarySocketId: user.socketId,
 						available: true
-                    });
-                    room.save((err, online) => {
+                    };
+                    roomCollection.findOneAndUpdate({vonlutaryId: data.userId}, r, {upsert:true}, 
+                        (err, online) => {
                         if (err) return callback(err);
                         const _id = (online && online._id && online._id.toString()) || null; 
                         callback(null, _id);
@@ -187,12 +188,13 @@ const room = {
 			online.findUserId(data.userId, 'anonymous', 
 			(err, user) => {
 				if(user) {
-					room = roomCollection({
+					r = {
 						anonymousId: data.userId,
 						anonymousSocketId: user.socketId,
 						available: true
-                    });
-                    room.save((err, online) => {
+                    };
+                    roomCollection.findOneAndUpdate({anonymousId: data.userId}, r, {upsert:true}, 
+                        (err, online) => {
                         if (err) return callback(err);
                         const _id = (online && online._id && online._id.toString()) || null; 
                         callback(null, _id);
